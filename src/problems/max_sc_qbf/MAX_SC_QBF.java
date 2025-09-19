@@ -44,11 +44,6 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
     protected BitSet[] coverBits;
 
     /**
-     * Penalty for not covering all variables
-     */
-    protected double lambda;
-
-    /**
 	 * The constructor for QuadracticBinaryFunction class. The filename of the
 	 * input for setting matrix of coefficients A of the MAX_SC_QBF. The dimension of
 	 * the array of variables x is returned from the {@link #readInput} method.
@@ -332,8 +327,6 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
             }
             coverBits[i] = bs;
         }
-
-        lambda = 10000;
 
 		return n;
 

@@ -134,7 +134,7 @@ public abstract class AbstractTS<E> {
 	 * solution worse. Cycling is prevented by not allowing forbidden
 	 * (tabu) moves that would otherwise backtrack to a previous solution.
 	 * 
-	 * @return An local optimum solution.
+	 * @return A local optimum solution.
 	 */
 	public abstract Solution<E> neighborhoodMove();
 
@@ -176,6 +176,8 @@ public abstract class AbstractTS<E> {
 			cost = sol.cost;
 			updateCL();
 
+            if (CL.isEmpty()) break;
+
 			/*
 			 * Explore all candidate elements to enter the solution, saving the
 			 * highest and lowest cost variation achieved by the candidates.
@@ -204,9 +206,9 @@ public abstract class AbstractTS<E> {
 			E inCand = RCL.get(rndIndex);
 			CL.remove(inCand);
 			sol.add(inCand);
+
 			ObjFunction.evaluate(sol);
 			RCL.clear();
-
 		}
 
 		return sol;
@@ -244,7 +246,7 @@ public abstract class AbstractTS<E> {
 	 * @return true if the criteria is met.
 	 */
 	public Boolean constructiveStopCriteria() {
-		return (cost > sol.cost) ? false : true;
+		return cost <= sol.cost;
 	}
 
 }

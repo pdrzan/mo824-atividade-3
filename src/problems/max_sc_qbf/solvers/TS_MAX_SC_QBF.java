@@ -190,7 +190,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(5, 1000, "instances/max_sc_qbf/max_sc_qbf-n_50-k_5.txt", true);
+		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(30, 100, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", true);
 
 		Solution<Integer> bestSol = tabusearch.solve();
 

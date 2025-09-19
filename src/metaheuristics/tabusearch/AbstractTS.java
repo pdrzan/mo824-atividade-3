@@ -168,12 +168,12 @@ public abstract class AbstractTS<E> {
 		RCL = makeRCL();
 		sol = createEmptySol();
 		cost = Double.POSITIVE_INFINITY;
+        int iteration = 0;
 
 		/* Main loop, which repeats until the stopping criteria is reached. */
 		while (!constructiveStopCriteria()) {
-
 			Double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
-			cost = sol.cost;
+			cost = ObjFunction.evaluate(sol);
 			updateCL();
 
             if (CL.isEmpty()) break;
@@ -200,15 +200,18 @@ public abstract class AbstractTS<E> {
 					RCL.add(c);
 				}
 			}
-		
+
 			/* Choose a candidate randomly from the RCL */
 			int rndIndex = rng.nextInt(RCL.size());
 			E inCand = RCL.get(rndIndex);
+
 			CL.remove(inCand);
 			sol.add(inCand);
 
 			ObjFunction.evaluate(sol);
 			RCL.clear();
+
+            iteration++;
 		}
 
 		return sol;
@@ -246,7 +249,7 @@ public abstract class AbstractTS<E> {
 	 * @return true if the criteria is met.
 	 */
 	public Boolean constructiveStopCriteria() {
-		return cost <= sol.cost;
+		return cost < sol.cost;
 	}
 
 }

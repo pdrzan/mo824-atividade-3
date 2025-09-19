@@ -36,8 +36,8 @@ public class TS_QBF extends AbstractTS<Integer> {
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public TS_QBF(Integer tenure, Integer iterations, String filename) throws IOException {
-		super(new QBF_Inverse(filename), tenure, iterations);
+	public TS_QBF(Integer tenure, Integer iterations, String filename, boolean isFirstImprovement) throws IOException {
+		super(new QBF_Inverse(filename), tenure, iterations, isFirstImprovement);
 	}
 
 	/* (non-Javadoc)
@@ -183,15 +183,16 @@ public class TS_QBF extends AbstractTS<Integer> {
 	 * 
 	 */
 	public static void main(String[] args) throws IOException {
-
 		long startTime = System.currentTimeMillis();
-		TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100");
+
+		TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100", false);
 		Solution<Integer> bestSol = tabusearch.solve();
-		System.out.println("maxVal = " + bestSol);
+
 		long endTime   = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
-		System.out.println("Time = "+(double)totalTime/(double)1000+" seg");
 
+        System.out.println("maxVal = " + bestSol);
+		System.out.println("Time = "+(double)totalTime/(double)1000+" seg");
 	}
 
 }

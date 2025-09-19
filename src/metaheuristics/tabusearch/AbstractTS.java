@@ -11,7 +11,7 @@ import problems.Evaluator;
 import solutions.Solution;
 
 /**
- * Abstract class for metaheuristic Tabu Search. It consider a minimization problem.
+ * Abstract class for metaheuristic Tabu Search. It considers a minimization problem.
  * 
  * @author ccavellucci, fusberti
  * @param <E>
@@ -64,6 +64,12 @@ public abstract class AbstractTS<E> {
 	 * the tabu tenure.
 	 */
 	protected Integer tenure;
+
+    /**
+     * if it uses fist-improvement strategy on search.
+     * if not, uses best-improvement strategy
+     */
+    protected boolean isFirstImprovement;
 
 	/**
 	 * the Candidate List of elements to enter the solution.
@@ -142,10 +148,11 @@ public abstract class AbstractTS<E> {
 	 * @param iterations
 	 *            The number of iterations which the TS will be executed.
 	 */
-	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer iterations) {
+	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer iterations, boolean isFirstImprovement) {
 		this.ObjFunction = objFunction;
 		this.tenure = tenure;
 		this.iterations = iterations;
+        this.isFirstImprovement = isFirstImprovement;
 	}
 
 	/**

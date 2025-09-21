@@ -56,11 +56,6 @@ public abstract class AbstractTS<E> {
 	protected Solution<E> sol;
 
 	/**
-	 * the number of iterations the TS main loop executes.
-	 */
-	protected Integer iterations;
-	
-	/**
 	 * the tabu tenure.
 	 */
 	protected Integer tenure;
@@ -70,6 +65,11 @@ public abstract class AbstractTS<E> {
      * if not, uses best-improvement strategy
      */
     protected boolean isFirstImprovement;
+
+    /**
+     * time limit in second for execution
+     */
+    protected Integer timeLimit;
 
 	/**
 	 * the Candidate List of elements to enter the solution.
@@ -145,13 +145,15 @@ public abstract class AbstractTS<E> {
 	 *            The objective function being minimized.
 	 * @param tenure
 	 *            The Tabu tenure parameter. 
-	 * @param iterations
-	 *            The number of iterations which the TS will be executed.
+	 * @param timeLimit
+	 *            The of seconds which the TS will be executed.
+     * @param isFirstImprovement
+     *            Decides if the local search will be first-improment
 	 */
-	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer iterations, boolean isFirstImprovement) {
+	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer timeLimit, boolean isFirstImprovement) {
 		this.ObjFunction = objFunction;
 		this.tenure = tenure;
-		this.iterations = iterations;
+        this.timeLimit = timeLimit;
         this.isFirstImprovement = isFirstImprovement;
 	}
 
@@ -168,7 +170,6 @@ public abstract class AbstractTS<E> {
 		RCL = makeRCL();
 		sol = createEmptySol();
 		cost = Double.POSITIVE_INFINITY;
-        int iteration = 0;
 
 		/* Main loop, which repeats until the stopping criteria is reached. */
 		while (!constructiveStopCriteria()) {
@@ -210,8 +211,6 @@ public abstract class AbstractTS<E> {
 
 			ObjFunction.evaluate(sol);
 			RCL.clear();
-
-            iteration++;
 		}
 
 		return sol;
@@ -225,17 +224,23 @@ public abstract class AbstractTS<E> {
 	 * @return The best feasible solution obtained throughout all iterations.
 	 */
 	public Solution<E> solve() {
+        long startTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
 
 		bestSol = createEmptySol();
 		constructiveHeuristic();
 		TL = makeTL();
-		for (int i = 0; i < iterations; i++) {
+        int iteration = 0;
+
+		while (endTime - startTime <= timeLimit * 1000) {
 			neighborhoodMove();
 			if (bestSol.cost > sol.cost) {
 				bestSol = new Solution<E>(sol);
 				if (verbose)
-					System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
+					System.out.println("(Iter. " + iteration + ") BestSol = " + bestSol);
 			}
+            endTime = System.currentTimeMillis();
+            iteration++;
 		}
 
 		return bestSol;

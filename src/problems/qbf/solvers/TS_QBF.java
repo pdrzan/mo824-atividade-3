@@ -28,16 +28,18 @@ public class TS_QBF extends AbstractTS<Integer> {
 	 * 
 	 * @param tenure
 	 *            The Tabu tenure parameter.
-	 * @param iterations
-	 *            The number of iterations which the TS will be executed.
+	 * @param timeLimit
+	 *            The number of seconds which the TS will be executed.
 	 * @param filename
 	 *            Name of the file for which the objective function parameters
 	 *            should be read.
+     * @param isFirstImprovement
+     *            Decides if the local search will be first-improment
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public TS_QBF(Integer tenure, Integer iterations, String filename, boolean isFirstImprovement) throws IOException {
-		super(new QBF_Inverse(filename), tenure, iterations, isFirstImprovement);
+	public TS_QBF(Integer tenure, Integer timeLimit, String filename, boolean isFirstImprovement) throws IOException {
+		super(new QBF_Inverse(filename), tenure, timeLimit, isFirstImprovement);
 	}
 
 	/* (non-Javadoc)

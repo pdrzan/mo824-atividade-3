@@ -27,16 +27,18 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	 * 
 	 * @param tenure
 	 *            The Tabu tenure parameter.
-	 * @param iterations
-	 *            The number of iterations which the TS will be executed.
+	 * @param timeLimit
+	 *            The number of seconds which the TS will be executed.
 	 * @param filename
 	 *            Name of the file for which the objective function parameters
 	 *            should be read.
+     * @param isFirstImprovement
+     *            Decides if the local search will be first-improment
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public TS_MAX_SC_QBF(Integer tenure, Integer iterations, String filename, boolean isFirstImprovement) throws IOException {
-		super(new MAX_SC_QBF_Inverse(filename), tenure, iterations, isFirstImprovement);
+	public TS_MAX_SC_QBF(Integer tenure, Integer timeLimit, String filename, boolean isFirstImprovement) throws IOException {
+		super(new MAX_SC_QBF_Inverse(filename), tenure, timeLimit, isFirstImprovement);
 	}
 
 	/* (non-Javadoc)
@@ -190,7 +192,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(30, 100, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", true);
+		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(30, 10, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", true);
 
 		Solution<Integer> bestSol = tabusearch.solve();
 

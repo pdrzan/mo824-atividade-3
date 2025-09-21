@@ -104,7 +104,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	@Override
 	public void updateCL() {
 
-		// do nothing
+        Collections.shuffle(CL);
 
 	}
 
@@ -148,34 +148,41 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 					bestCandIn = candIn;
 					bestCandOut = null;
 				}
+                if (isFirstImprovement) break;
 			}
 		}
 
-		// Evaluate removals
-		for (Integer candOut : sol) {
-			Double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
-			if (!TL.contains(candOut) || sol.cost+deltaCost < bestSol.cost) {
-				if (deltaCost < minDeltaCost) {
-					minDeltaCost = deltaCost;
-					bestCandIn = null;
-					bestCandOut = candOut;
-				}
-			}
-		}
+        if (bestCandIn == null || !isFirstImprovement) {
+            // Evaluate removals
+            for (Integer candOut : sol) {
+                Double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
+                if (!TL.contains(candOut) || sol.cost+deltaCost < bestSol.cost) {
+                    if (deltaCost < minDeltaCost) {
+                        minDeltaCost = deltaCost;
+                        bestCandIn = null;
+                        bestCandOut = candOut;
+                    }
+                    if (isFirstImprovement) break;
+                }
+            }
+        }
 
-		// Evaluate exchanges
-		for (Integer candIn : CLPortion) {
-			for (Integer candOut : sol) {
-				Double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
-				if ((!TL.contains(candIn) && !TL.contains(candOut)) || sol.cost+deltaCost < bestSol.cost) {
-					if (deltaCost < minDeltaCost) {
-						minDeltaCost = deltaCost;
-						bestCandIn = candIn;
-						bestCandOut = candOut;
-					}
-				}
-			}
-		}
+        if ((bestCandIn == null && bestCandOut == null) || !isFirstImprovement) {
+            // Evaluate exchanges
+            for (Integer candIn : CLPortion) {
+                for (Integer candOut : sol) {
+                    Double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
+                    if ((!TL.contains(candIn) && !TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost) {
+                        if (deltaCost < minDeltaCost) {
+                            minDeltaCost = deltaCost;
+                            bestCandIn = candIn;
+                            bestCandOut = candOut;
+                        }
+                        if (isFirstImprovement) break;
+                    }
+                }
+            }
+        }
 
 		// Implement the best non-tabu move
 		TL.poll();
@@ -208,7 +215,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(30, 10, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", 0.9, true);
+		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(50, 10, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", 1., true);
 
 		Solution<Integer> bestSol = tabusearch.solve();
 

@@ -61,6 +61,12 @@ public abstract class AbstractTS<E> {
 	protected Integer tenure;
 
     /**
+     * the portion of CL to be considered on local
+     * search
+     */
+    protected Double portionCL;
+
+    /**
      * if it uses fist-improvement strategy on search.
      * if not, uses best-improvement strategy
      */
@@ -93,6 +99,14 @@ public abstract class AbstractTS<E> {
 	 * @return The Candidate List.
 	 */
 	public abstract ArrayList<E> makeCL();
+
+    /**
+     * Gets the portion of Candidate List that will be considered in local
+     * search. This is part of the probabilist Tabu Search.
+     *
+     * @return The portion of Candidate List to be considered
+     */
+    public abstract ArrayList<E> makeCLPortion();
 
 	/**
 	 * Creates the Restricted Candidate List, which is an ArrayList of the best
@@ -147,13 +161,17 @@ public abstract class AbstractTS<E> {
 	 *            The Tabu tenure parameter. 
 	 * @param timeLimit
 	 *            The of seconds which the TS will be executed.
+     * @param portionCL
+     *            The portion of Candidate List that will be considered in local
+     *            search.
      * @param isFirstImprovement
      *            Decides if the local search will be first-improment
 	 */
-	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer timeLimit, boolean isFirstImprovement) {
+	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer timeLimit, Double portionCL, boolean isFirstImprovement) {
 		this.ObjFunction = objFunction;
 		this.tenure = tenure;
         this.timeLimit = timeLimit;
+        this.portionCL = portionCL;
         this.isFirstImprovement = isFirstImprovement;
 	}
 

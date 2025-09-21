@@ -7,6 +7,7 @@ import solutions.Solution;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 /**
@@ -32,13 +33,16 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	 * @param filename
 	 *            Name of the file for which the objective function parameters
 	 *            should be read.
+     * @param portionCL
+     *            The portion of Candidate List that will be considered in local
+     *            search.
      * @param isFirstImprovement
      *            Decides if the local search will be first-improment
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public TS_MAX_SC_QBF(Integer tenure, Integer timeLimit, String filename, boolean isFirstImprovement) throws IOException {
-		super(new MAX_SC_QBF_Inverse(filename), tenure, timeLimit, isFirstImprovement);
+	public TS_MAX_SC_QBF(Integer tenure, Integer timeLimit, String filename, Double portionCL, boolean isFirstImprovement) throws IOException {
+		super(new MAX_SC_QBF_Inverse(filename), tenure, timeLimit, portionCL, isFirstImprovement);
 	}
 
 	/* (non-Javadoc)
@@ -56,6 +60,16 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 		return _CL;
 
 	}
+
+    /* (non-Javadoc)
+     * @see metaheuristics.tabusearch.AbstractTS#makeCLPortion()
+     */
+    @Override
+    public ArrayList<Integer> makeCLPortion() {
+
+        Collections.shuffle(CL);
+        return new ArrayList<>(CL.subList(0, (int) (portionCL * CL.size())));
+    }
 
 	/* (non-Javadoc)
 	 * @see metaheuristics.tabusearch.AbstractTS#makeRCL()
@@ -123,8 +137,10 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 		minDeltaCost = Double.POSITIVE_INFINITY;
 		updateCL();
 
+        ArrayList<Integer> CLPortion = makeCLPortion();
+
 		// Evaluate insertions
-		for (Integer candIn : CL) {
+		for (Integer candIn : CLPortion) {
 			Double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
 			if (!TL.contains(candIn) || sol.cost+deltaCost < bestSol.cost) {
 				if (deltaCost < minDeltaCost) {
@@ -148,7 +164,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 		}
 
 		// Evaluate exchanges
-		for (Integer candIn : CL) {
+		for (Integer candIn : CLPortion) {
 			for (Integer candOut : sol) {
 				Double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
 				if ((!TL.contains(candIn) && !TL.contains(candOut)) || sol.cost+deltaCost < bestSol.cost) {
@@ -192,7 +208,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(30, 10, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", true);
+		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(30, 10, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", 0.9, true);
 
 		Solution<Integer> bestSol = tabusearch.solve();
 

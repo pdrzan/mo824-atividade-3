@@ -3,6 +3,7 @@ package problems.qbf.solvers;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import metaheuristics.tabusearch.AbstractTS;
 import problems.qbf.QBF_Inverse;
@@ -33,13 +34,16 @@ public class TS_QBF extends AbstractTS<Integer> {
 	 * @param filename
 	 *            Name of the file for which the objective function parameters
 	 *            should be read.
+     * @param portionCL
+     *            The portion of Candidate List that will be considered in local
+     *            search.
      * @param isFirstImprovement
      *            Decides if the local search will be first-improment
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public TS_QBF(Integer tenure, Integer timeLimit, String filename, boolean isFirstImprovement) throws IOException {
-		super(new QBF_Inverse(filename), tenure, timeLimit, isFirstImprovement);
+	public TS_QBF(Integer tenure, Integer timeLimit, String filename, Double portionCL, boolean isFirstImprovement) throws IOException {
+		super(new QBF_Inverse(filename), tenure, timeLimit, portionCL, isFirstImprovement);
 	}
 
 	/* (non-Javadoc)
@@ -57,6 +61,18 @@ public class TS_QBF extends AbstractTS<Integer> {
 		return _CL;
 
 	}
+
+    /* (non-Javadoc)
+     * @see metaheuristics.tabusearch.AbstractTS#makeCLPortion()
+     */
+    @Override
+    public ArrayList<Integer> makeCLPortion() {
+
+        Collections.shuffle(CL);
+        ArrayList<Integer> CLPortion = new ArrayList<>(CL.subList(0, (int) (portionCL * CL.size())));
+
+        return CLPortion;
+    }
 
 	/* (non-Javadoc)
 	 * @see metaheuristics.tabusearch.AbstractTS#makeRCL()
@@ -187,7 +203,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100", false);
+		TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100", 1.0, false);
 		Solution<Integer> bestSol = tabusearch.solve();
 
 		long endTime   = System.currentTimeMillis();

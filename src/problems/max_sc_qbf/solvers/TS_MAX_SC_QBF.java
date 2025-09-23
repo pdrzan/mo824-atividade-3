@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 
 /**
@@ -30,6 +31,8 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	 *            The Tabu tenure parameter.
 	 * @param timeLimit
 	 *            The number of seconds which the TS will be executed.
+     * @param consecutiveBetterSolutionsToIntensification
+     *            The number of consecutive better solutions to trigger intensification.
 	 * @param filename
 	 *            Name of the file for which the objective function parameters
 	 *            should be read.
@@ -37,12 +40,14 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
      *            The portion of Candidate List that will be considered in local
      *            search.
      * @param isFirstImprovement
-     *            Decides if the local search will be first-improment
+     *            Decides if the local search will be first-improvement
+     * @param isWithIntensification
+     *            Decides if it will use intensification strategy
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public TS_MAX_SC_QBF(Integer tenure, Integer timeLimit, String filename, Double portionCL, boolean isFirstImprovement) throws IOException {
-		super(new MAX_SC_QBF_Inverse(filename), tenure, timeLimit, portionCL, isFirstImprovement);
+	public TS_MAX_SC_QBF(Integer tenure, Integer timeLimit, Integer consecutiveBetterSolutionsToIntensification, String filename, Double portionCL, boolean isFirstImprovement, boolean isWithIntensification) throws IOException {
+		super(new MAX_SC_QBF_Inverse(filename), tenure, timeLimit, consecutiveBetterSolutionsToIntensification, portionCL, isFirstImprovement, isWithIntensification);
 	}
 
 	/* (non-Javadoc)
@@ -107,6 +112,89 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
         Collections.shuffle(CL);
 
 	}
+
+    /* (non-Javadoc)
+     * @see metaheuristics.tabusearch.AbstractTS#intensification()
+     */
+    @Override
+    public Solution<Integer> intensification() {
+
+        Double minDeltaCost;
+        Integer firstBestCandIn = null, secondBestCandIn = null;
+        Integer firstBestCandOut = null, secondBestCandOut = null;
+
+        minDeltaCost = Double.POSITIVE_INFINITY;
+
+        // Evaluate insertions
+        for (Integer firstCandIn : CL) {
+            for (Integer secondCandIn : CL) {
+                if (Objects.equals(firstCandIn, secondCandIn)) continue;
+
+                Double deltaCost = ObjFunction.evaluateInsertionCost(firstCandIn, secondCandIn, sol);
+                if ((!TL.contains(firstCandIn) && !TL.contains(secondCandIn)) || sol.cost + deltaCost < bestSol.cost) {
+                    if (deltaCost < minDeltaCost) {
+                        minDeltaCost = deltaCost;
+
+                        firstBestCandIn = firstCandIn;
+                        secondBestCandIn = secondCandIn;
+                    }
+                }
+            }
+        }
+
+        for (Integer firstCandOut : sol) {
+            for (Integer secondCandOut : sol) {
+                if (firstCandOut.equals(secondCandOut)) continue;
+
+                Double deltaCost = ObjFunction.evaluateRemovalCost(firstCandOut, secondCandOut, sol);
+                if ((!TL.contains(firstCandOut) && !TL.contains(secondCandOut)) || sol.cost + deltaCost < bestSol.cost) {
+                    if (deltaCost < minDeltaCost) {
+                        minDeltaCost = deltaCost;
+
+                        firstBestCandOut = firstCandOut;
+                        secondBestCandOut = secondCandOut;
+
+                        firstBestCandIn = null;
+                        secondBestCandIn = null;
+                    }
+                }
+            }
+        }
+
+        // Implement the best non-tabu move
+        TL.poll();
+        TL.poll();
+        if (firstBestCandOut != null && secondBestCandOut != null) {
+            sol.remove(firstBestCandOut);
+            sol.remove(secondBestCandOut);
+            CL.add(firstBestCandOut);
+            CL.add(secondBestCandOut);
+            TL.add(firstBestCandOut);
+            TL.add(secondBestCandOut);
+        } else {
+            TL.add(fake);
+            TL.add(fake);
+        }
+
+        TL.poll();
+        TL.poll();
+        if (firstBestCandIn != null && secondBestCandIn != null) {
+            sol.add(firstBestCandIn);
+            sol.add(secondBestCandIn);
+            CL.remove(firstBestCandIn);
+            CL.remove(secondBestCandIn);
+            TL.add(firstBestCandIn);
+            TL.add(secondBestCandIn);
+        } else {
+            TL.add(fake);
+            TL.add(fake);
+        }
+
+        ObjFunction.evaluate(sol);
+
+        return null;
+
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -215,7 +303,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(50, 10, "instances/max_sc_qbf/max_sc_qbf-n_400-k_3.txt", 1., true);
+		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(50, 10, 3, "instances/max_sc_qbf/max_sc_qbf-n_400-k_5.txt", 1., false, true);
 
 		Solution<Integer> bestSol = tabusearch.solve();
 

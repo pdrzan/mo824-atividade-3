@@ -31,6 +31,8 @@ public class TS_QBF extends AbstractTS<Integer> {
 	 *            The Tabu tenure parameter.
 	 * @param timeLimit
 	 *            The number of seconds which the TS will be executed.
+     * @param consecutiveBetterSolutionsToIntensification
+     *            The number of consecutive better solutions to trigger intensification.
 	 * @param filename
 	 *            Name of the file for which the objective function parameters
 	 *            should be read.
@@ -38,12 +40,14 @@ public class TS_QBF extends AbstractTS<Integer> {
      *            The portion of Candidate List that will be considered in local
      *            search.
      * @param isFirstImprovement
-     *            Decides if the local search will be first-improment
+     *            Decides if the local search will be first-improvement
+     * @param isWithIntensification
+     *            Decides if it will use intensification strategy
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public TS_QBF(Integer tenure, Integer timeLimit, String filename, Double portionCL, boolean isFirstImprovement) throws IOException {
-		super(new QBF_Inverse(filename), tenure, timeLimit, portionCL, isFirstImprovement);
+	public TS_QBF(Integer tenure, Integer timeLimit, Integer consecutiveBetterSolutionsToIntensification, String filename, Double portionCL, boolean isFirstImprovement, boolean isWithIntensification) throws IOException {
+		super(new QBF_Inverse(filename), tenure, timeLimit, consecutiveBetterSolutionsToIntensification, portionCL, isFirstImprovement, isWithIntensification);
 	}
 
 	/* (non-Javadoc)
@@ -110,6 +114,16 @@ public class TS_QBF extends AbstractTS<Integer> {
 		// do nothing
 
 	}
+
+    /* (non-Javadoc)
+     * @see metaheuristics.tabusearch.AbstractTS#intensification()
+     */
+    @Override
+    public Solution<Integer> intensification() {
+
+        return sol;
+
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -203,7 +217,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100", 1.0, false);
+		TS_QBF tabusearch = new TS_QBF(20, 1000, 0, "instances/qbf/qbf100", 1.0, false, false);
 		Solution<Integer> bestSol = tabusearch.solve();
 
 		long endTime   = System.currentTimeMillis();

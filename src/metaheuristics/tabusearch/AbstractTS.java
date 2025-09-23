@@ -73,11 +73,26 @@ public abstract class AbstractTS<E> {
     protected boolean isFirstImprovement;
 
     /**
+     * if it uses an intensification strategy
+     */
+    protected boolean isWithIntensification;
+
+    /**
      * time limit in second for execution
      */
     protected Integer timeLimit;
 
-	/**
+    /**
+     * consecutive iterations that a better solutions was found
+     */
+    protected Integer consecutiveBetterSolutions;
+
+    /**
+     * how many consecutive better solutions to do an intensification
+     */
+    protected Integer consecutiveBetterSolutionsToIntensification;
+
+    /**
 	 * the Candidate List of elements to enter the solution.
 	 */
 	protected ArrayList<E> CL;
@@ -152,6 +167,15 @@ public abstract class AbstractTS<E> {
 	 */
 	public abstract Solution<E> neighborhoodMove();
 
+    /**
+     * Do an intensification phase with more moves possibilities than {@link #neighborhoodMove()}.
+     * This is useful to run when we believe that we are searching a space with good potential
+     * to find good solutions.
+     *
+     * @return A local optimum solution.
+     */
+    public abstract Solution<E> intensification();
+
 	/**
 	 * Constructor for the AbstractTS class.
 	 * 
@@ -161,18 +185,24 @@ public abstract class AbstractTS<E> {
 	 *            The Tabu tenure parameter. 
 	 * @param timeLimit
 	 *            The of seconds which the TS will be executed.
+     * @param consecutiveBetterSolutionsToIntensification
+     *            The number of consecutive better solutions to trigger intensification.
      * @param portionCL
      *            The portion of Candidate List that will be considered in local
      *            search.
      * @param isFirstImprovement
      *            Decides if the local search will be first-improment
+     * @param isWithIntensification
+     *            Decides if it will use intensification strategy
 	 */
-	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer timeLimit, Double portionCL, boolean isFirstImprovement) {
+	public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer timeLimit, Integer consecutiveBetterSolutionsToIntensification, Double portionCL, boolean isFirstImprovement, boolean isWithIntensification) {
 		this.ObjFunction = objFunction;
 		this.tenure = tenure;
         this.timeLimit = timeLimit;
+        this.consecutiveBetterSolutionsToIntensification = consecutiveBetterSolutionsToIntensification;
         this.portionCL = portionCL;
         this.isFirstImprovement = isFirstImprovement;
+        this.isWithIntensification = isWithIntensification;
 	}
 
 	/**
@@ -249,14 +279,23 @@ public abstract class AbstractTS<E> {
 		constructiveHeuristic();
 		TL = makeTL();
         int iteration = 0;
+        consecutiveBetterSolutions = 0;
 
 		while (endTime - startTime <= timeLimit * 1000) {
 			neighborhoodMove();
+            if (isWithIntensification && consecutiveBetterSolutions >= consecutiveBetterSolutionsToIntensification) {
+                intensification();
+            }
+
 			if (bestSol.cost > sol.cost) {
+                consecutiveBetterSolutions++;
 				bestSol = new Solution<E>(sol);
 				if (verbose)
 					System.out.println("(Iter. " + iteration + ") BestSol = " + bestSol);
-			}
+			} else {
+                consecutiveBetterSolutions = 0;
+            }
+
             endTime = System.currentTimeMillis();
             iteration++;
 		}

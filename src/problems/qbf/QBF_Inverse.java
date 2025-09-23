@@ -40,6 +40,14 @@ public class QBF_Inverse extends QBF {
 	public Double evaluateInsertionQBF(int i) {	
 		return -super.evaluateInsertionQBF(i);
 	}
+
+    /* (non-Javadoc)
+     * @see problems.qbf.QBF#evaluateInsertion(int)
+     */
+    @Override
+    public Double evaluateInsertionQBF(int i, int j) {
+        return -super.evaluateInsertionQBF(i, j);
+    }
 	
 	/* (non-Javadoc)
 	 * @see problems.qbf.QBF#evaluateRemoval(int)
@@ -48,6 +56,14 @@ public class QBF_Inverse extends QBF {
 	public Double evaluateRemovalQBF(int i) {
 		return -super.evaluateRemovalQBF(i);
 	}
+
+    /* (non-Javadoc)
+     * @see problems.qbf.QBF#evaluateRemoval(int)
+     */
+    @Override
+    public Double evaluateRemovalQBF(int i, int j) {
+        return -super.evaluateRemovalQBF(i, j);
+    }
 	
 	/* (non-Javadoc)
 	 * @see problems.qbf.QBF#evaluateExchange(int, int)

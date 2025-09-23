@@ -137,6 +137,20 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
         return dQ <= 0 && newlyCovered > 0 ? 1 : dQ;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see problems.Evaluator#evaluateInsertionCost(java.lang.Object,
+     * solutions.Solution)
+     */
+    @Override
+    public Double evaluateInsertionCost(Integer fistElem, Integer secondElem, Solution<Integer> sol) {
+        setVariables(sol);
+        double dQ = evaluateInsertionMAXSCQBF(fistElem, secondElem);
+        int newlyCovered = newlyCoveredBy(fistElem, sol) + newlyCoveredBy(secondElem, sol);
+        return dQ <= 0 && newlyCovered > 0 ? 1 : dQ;
+    }
+
 	/**
 	 * Determines the contribution to the MAX_SC_QBF objective function from the
 	 * insertion of an element.
@@ -154,6 +168,30 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
 		return evaluateContributionMAXSCQBF(i);
 	}
 
+    /**
+     * Determines the contribution to the MAX_SC_QBF objective function from the
+     * insertion of two element.
+     *
+     * @param i
+     *            Index of the first element being inserted into the solution.
+     * @param j
+     *            Index of the second element being inserted into the solution.
+     * @return Ihe variation of the objective function resulting from the
+     *         insertion.
+     */
+    public Double evaluateInsertionMAXSCQBF(int i, int j) {
+        if (i == j)
+            return evaluateInsertionMAXSCQBF(i);
+
+        if (variables[i] == 1)
+            return evaluateInsertionMAXSCQBF(j);
+
+        if (variables[j] == 1)
+            return evaluateInsertionMAXSCQBF(i);
+
+        return evaluateContributionMAXSCQBF(i, j);
+    }
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -165,6 +203,20 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
         setVariables(sol);
         double dQ = evaluateRemovalMAXSCQBF(elem);
         int newlyUncovered = newlyUncoveredBy(elem, sol);
+        return newlyUncovered > 0 ? Double.NEGATIVE_INFINITY : dQ;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see problems.Evaluator#evaluateRemovalCost(java.lang.Object,
+     * solutions.Solution)
+     */
+    @Override
+    public Double evaluateRemovalCost(Integer firstElem, Integer secondElem, Solution<Integer> sol) {
+        setVariables(sol);
+        double dQ = evaluateRemovalMAXSCQBF(firstElem, secondElem);
+        int newlyUncovered = newlyUncoveredBy(firstElem, sol) + newlyCoveredBy(secondElem, sol);
         return newlyUncovered > 0 ? Double.NEGATIVE_INFINITY : dQ;
     }
 
@@ -183,8 +235,31 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
 			return 0.0;
 
 		return -evaluateContributionMAXSCQBF(i);
-
 	}
+
+    /**
+     * Determines the contribution to the MAX_SC_QBF objective function from the
+     * removal of two element.
+     *
+     * @param i
+     *            Index of the first element being removed from the solution.
+     * @param j
+     *            Index of the second element being removed from the solution.
+     * @return The variation of the objective function resulting from the
+     *         removal.
+     */
+    public Double evaluateRemovalMAXSCQBF(int i, int j) {
+        if (i == j)
+            return evaluateRemovalMAXSCQBF(i);
+
+        if (variables[i] == 0)
+            return evaluateInsertionMAXSCQBF(j);
+
+        if (variables[j] == 0)
+            return evaluateInsertionMAXSCQBF(i);
+
+        return -evaluateContributionMAXSCQBF(i, j);
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -258,6 +333,36 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
 
 		return sum;
 	}
+
+    /**
+     * Determines the contribution to the MAX_SC_QBF objective function from the
+     * insertion of two elements. This method is faster than evaluating the whole
+     * solution, since it uses the fact that only one line and one column from
+     * matrix A needs to be evaluated when inserting a new element into the
+     * solution. This method is different from {@link #evaluateInsertionMAXSCQBF(int)},
+     * since it disregards the fact that the element might already be in the
+     * solution.
+     *
+     * @param i
+     *            index of the element being inserted into the solution.
+     * @return the variation of the objective function resulting from the
+     *         insertion.
+     */
+    private Double evaluateContributionMAXSCQBF(int i, int j) {
+
+        Double sum = 0.0;
+
+        for (int t = 0; t < size; t++) {
+            if (i != t)
+                sum += variables[t] * (A[i][t] + A[t][i]);
+            if (j != t)
+                sum += variables[t] * (A[j][t] + A[j][i]);
+        }
+        sum += A[i][i];
+        sum += A[j][j];
+
+        return sum;
+    }
 
 	/**
 	 * Responsible for setting the MAX_SC_QBF function parameters by reading the

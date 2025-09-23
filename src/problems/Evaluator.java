@@ -45,6 +45,21 @@ public interface Evaluator<E> {
 	 */
 	public abstract Double evaluateInsertionCost(E elem, Solution<E> sol);
 
+    /** Evaluates the cost variation of inserting two elements into a solution
+	 * according to an objective function.
+	 *
+     * @param firstElem
+	 *            the first element under consideration for insertion.
+     * @param secondElem
+     *            the second element under consideration for insertion.
+	 * @param sol
+	 *            the solution for which the element insertion is being
+	 *            evaluated.
+	 * @return the cost variation resulting from the element insertion into the
+	 *         solution.
+	 */
+    public abstract Double evaluateInsertionCost(E firstElem, E secondElem, Solution<E> sol);
+
 	/**
 	 * Evaluates the cost variation of removing an element into a solution
 	 * according to an objective function.
@@ -54,10 +69,26 @@ public interface Evaluator<E> {
 	 * @param sol
 	 *            the solution for which the element insertion is being
 	 *            evaluated.
-	 * @return the cost variation resulting from the element removal pf the the
+	 * @return the cost variation resulting from the element removal of the
 	 *         solution.
 	 */
 	public abstract Double evaluateRemovalCost(E elem, Solution<E> sol);
+
+    /**
+     * Evaluates the cost variation of removing two elements into a solution
+     * according to an objective function.
+     *
+     * @param firstElem
+     *            the first element under consideration for removal.
+     * @param secondElem
+     *            the seccond element under consideration for removal.
+     * @param sol
+     *            the solution for which the element insertion is being
+     *            evaluated.
+     * @return the cost variation resulting from the elements removal of the
+     *         solution.
+     */
+    public abstract Double evaluateRemovalCost(E firstElem, E secondElem, Solution<E> sol);
 
 	/**
 	 * Evaluates the cost variation of exchanging candidates, one being

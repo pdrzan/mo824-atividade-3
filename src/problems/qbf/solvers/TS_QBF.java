@@ -214,110 +214,113 @@ public class TS_QBF extends AbstractTS<Integer> {
 	 * A main method used for testing the TS metaheuristic.
 	 * 
 	 */
-	 public static void main(String[] args) {
-        if (args.length < 5) {
-            printUsage();
-            return;
-        }
+	public static void main(String[] args) {
+		if (args.length < 5) {
+			printUsage();
+			return;
+		}
 
-        try {
-            String filename          = args[0];                         // ex: instances/qbf/qbf100
-            int    tenure            = Integer.parseInt(args[1]);       // ex: 20
-            int    timeLimitSec      = Integer.parseInt(args[2]);       // ex: 1000
-            String mode              = args[3].toLowerCase();           // standard|prob_ts|intensify|prob_plus_intensify
-            boolean firstImprovement = Boolean.parseBoolean(args[4]);   // true/false
-            boolean withIntensive    = Boolean.parseBoolean(args[5]);   // true/false
+		try {
+			// Required parameters
+			final String filename          = args[0];                // ex: instances/qbf/qbf100
+			final int    tenure            = Integer.parseInt(args[1]);  // ex: 20
+			final int    timeLimitSec      = Integer.parseInt(args[2]);  // ex: 1000
+			final String mode              = args[3].toLowerCase();      // standard|prob_ts|intensify|prob_plus_intensify
+			final boolean firstImprovement = Boolean.parseBoolean(args[4]);
 
-            // Optional parameters for the different modes
-            double portionCL = 1.0;     // default to standard/intensify
-            int intensEvery  = 0;       // 0 = disables
-            int intensLength = 0;
-            boolean forceBestOnIntens = true; // best-improving during intensification
+			// Defaults for optional parameters
+			double  portionCL             = 1.0;   // prob_ts
+			int     intensEvery           = 0;
+			int     intensLength          = 0;
+			boolean forceBestOnIntens     = false;
+			boolean useProbTS             = false;
+			boolean withIntensification   = false;
 
-            int idx = 5; // next optional argument
-            switch (mode) {
-                case "standard":
-                    // no extras
-                    break;
+			int idx = 5;
 
-                case "prob_ts":
-                    // <portionCL>
-                    portionCL = (args.length > idx) ? Double.parseDouble(args[idx++]) : 0.2; // default = 0.2
-                    if (portionCL <= 0.0 || portionCL > 1.0) portionCL = 0.2;
-                    break;
+			switch (mode) {
+				case "standard":
+					break;
 
-                case "intensify":
-                    // <intensifyEvery> <intensifyLength> [forceBestOnIntens]
-                    intensEvery  = (args.length > idx) ? Integer.parseInt(args[idx++]) : 100;
-                    intensLength = (args.length > idx) ? Integer.parseInt(args[idx++]) : 10;
-                    if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
-                    break;
+				case "prob_ts":
+					if (args.length <= idx)
+						throw new IllegalArgumentException("Mode prob_ts requires <portionCL>.");
+					portionCL = Double.parseDouble(args[idx++]);
+					if (portionCL <= 0.0 || portionCL > 1.0)
+						throw new IllegalArgumentException("portionCL must be in (0,1].");
+					useProbTS = true;
+					break;
 
-                case "prob_plus_intensify":
-                    // <portionCL> <intensifyEvery> <intensifyLength> [forceBestOnIntens]
-                    portionCL    = (args.length > idx) ? Double.parseDouble(args[idx++]) : 0.2;
-                    if (portionCL <= 0.0 || portionCL > 1.0) portionCL = 0.2;
-                    intensEvery  = (args.length > idx) ? Integer.parseInt(args[idx++]) : 100;
-                    intensLength = (args.length > idx) ? Integer.parseInt(args[idx++]) : 10;
-                    if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
-                    break;
-            }
+				case "intensify":
+					if (args.length <= idx + 1)
+						throw new IllegalArgumentException("Mode intensify requires <every> <length> [forceBest].");
+					intensEvery  = Integer.parseInt(args[idx++]);
+					intensLength = Integer.parseInt(args[idx++]);
+					if (intensEvery <= 0 || intensLength <= 0)
+						throw new IllegalArgumentException("<every> and <length> must be > 0.");
+					if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
+					withIntensification = true;
+					break;
 
-            long t0 = System.currentTimeMillis();
+				case "prob_plus_intensify":
+					if (args.length <= idx + 2)
+						throw new IllegalArgumentException("Mode prob_plus_intensify requires <portionCL> <every> <length> [forceBest].");
+					portionCL = Double.parseDouble(args[idx++]);
+					if (portionCL <= 0.0 || portionCL > 1.0)
+						throw new IllegalArgumentException("portionCL must be in (0,1].");
+					intensEvery  = Integer.parseInt(args[idx++]);
+					intensLength = Integer.parseInt(args[idx++]);
+					if (intensEvery <= 0 || intensLength <= 0)
+						throw new IllegalArgumentException("<every> and <length> must be > 0.");
+					if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
+					useProbTS           = true;
+					withIntensification = true;
+					break;
 
-            TS_QBF ts = new TS_QBF(tenure, timeLimitSec, 3, filename, portionCL, firstImprovement, withIntensive);
+				default:
+					throw new IllegalArgumentException("Unknown mode: " + mode);
+			}
 
-            switch (mode) {
-                case "standard":
-                    ts.setUseProbabilisticTS(false);
-                    ts.setIntensification(0, 0, false);
-                    break;
+			long t0 = System.currentTimeMillis();
 
-                case "prob_ts":
-                    ts.setUseProbabilisticTS(true);
-                    ts.setIntensification(0, 0, false);
-                    break;
+			// Intensification triggers after finding 3 consecutive better solutions (can be changed in the constructor call below)
+			TS_QBF ts = new TS_QBF(tenure, timeLimitSec, 3, filename, portionCL, firstImprovement, withIntensification);
 
-                case "intensify":
-                    ts.setUseProbabilisticTS(false);
-                    ts.setIntensification(intensEvery, intensLength, forceBestOnIntens);
-                    break;
+			// Set optional parameters
+			ts.setUseProbabilisticTS(useProbTS);
+			ts.setIntensification(withIntensification ? intensEvery : 0,
+								withIntensification ? intensLength : 0,
+								forceBestOnIntens);
 
-                case "prob_plus_intensify":
-                    ts.setUseProbabilisticTS(true);
-                    ts.setIntensification(intensEvery, intensLength, forceBestOnIntens);
-                    break;
-            }
+			// Solve
+			Solution<Integer> bestSol = ts.solve();
 
-            // Resolve
-            Solution<Integer> bestSol = ts.solve();
+			long t1 = System.currentTimeMillis();
+			System.out.println("Best solution found: " + bestSol);
+			System.out.printf("Time (s): %.3f%n", (t1 - t0) / 1000.0);
 
-            long t1 = System.currentTimeMillis();
+		} catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
+			e.printStackTrace();
+			printUsage();
+		}
+	}
 
-            System.out.println("Melhor solução encontrada: " + bestSol);
-            System.out.println("Tempo (s): " + (t1 - t0) / 1000.0);
-
-        } catch (Exception e) {
-            System.err.println("Erro: " + e.getMessage());
-            e.printStackTrace();
-            printUsage();
-        }
-    }
-
-    private static void printUsage() {
-        System.out.println("Uso:");
-        System.out.println(" java problems.qbf.solvers.TS_QBF <instance> <tenure> <timelimit_sec> <mode> <firstImprovement> [params...]");
-        System.out.println("   <mode> = standard | prob_ts | intensify | prob_plus_intensify");
-        System.out.println();
-        System.out.println("Exemplos:");
-        System.out.println("  standard:");
-        System.out.println("    ... TS_QBF_Main instances/qbf/qbf100 20 1000 standard false");
-        System.out.println("  prob_ts <portionCL (0,1]>:");
-        System.out.println("    ... TS_QBF_Main instances/qbf/qbf100 20 1000 prob_ts false 0.25");
-        System.out.println("  intensify <every> <length> [forceBest(true/false)]:");
-        System.out.println("    ... TS_QBF_Main instances/qbf/qbf100 20 1000 intensify false 100 10 true");
-        System.out.println("  prob_plus_intensify <portionCL> <every> <length> [forceBest]:");
-        System.out.println("    ... TS_QBF_Main instances/qbf/qbf100 20 1000 prob_plus_intensify false 0.25 150 15 true");
-    }
+	private static void printUsage() {
+		System.out.println("Uso:");
+		System.out.println("  java -cp bin problems.qbf.solvers.TS_QBF <instance> <tenure> <timelimit_sec> <mode> <firstImprovement> [params...]");
+		System.out.println();
+		System.out.println("Modos:");
+		System.out.println("  standard");
+		System.out.println("  prob_ts <portionCL (0,1]>");
+		System.out.println("  intensify <every> <length> [forceBest(true/false)]");
+		System.out.println("  prob_plus_intensify <portionCL> <every> <length> [forceBest(true/false)]");
+		System.out.println();
+		System.out.println("Exemplos:");
+		System.out.println("  java -cp bin problems.qbf.solvers.TS_QBF instances/qbf/qbf100 20 60 standard false");
+		System.out.println("  java -cp bin problems.qbf.solvers.TS_QBF instances/qbf/qbf100 20 60 prob_ts false 0.25");
+		System.out.println("  java -cp bin problems.qbf.solvers.TS_QBF instances/qbf/qbf100 20 60 intensify false 100 10 true");
+		System.out.println("  java -cp bin problems.qbf.solvers.TS_QBF instances/qbf/qbf100 20 60 prob_plus_intensify false 0.25 150 15 true");
+	}
 
 }

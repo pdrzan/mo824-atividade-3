@@ -285,13 +285,6 @@ public class TS_QBF extends AbstractTS<Integer> {
 
 			// Intensification triggers after finding 3 consecutive better solutions (can be changed in the constructor call below)
 			TS_QBF ts = new TS_QBF(tenure, timeLimitSec, 3, filename, portionCL, firstImprovement, withIntensification);
-
-			// Set optional parameters
-			ts.setUseProbabilisticTS(useProbTS);
-			ts.setIntensification(withIntensification ? intensEvery : 0,
-								withIntensification ? intensLength : 0,
-								forceBestOnIntens);
-
 			// Solve
 			Solution<Integer> bestSol = ts.solve();
 

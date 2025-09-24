@@ -107,14 +107,6 @@ public abstract class AbstractTS<E> {
 	 */
 	protected ArrayDeque<E> TL;
 
-	/** Strategy toggles for probabilistic TS*/
-    protected boolean useProbabilisticTS = false;
-
-    /** Intensification by Neighborhood: run every K iterations for L iterations */
-    protected int intensifyEvery = 100;
-    protected int intensifyLength = 10;    
-
-
 	/**
 	 * Creates the Candidate List, which is an ArrayList of candidate elements
 	 * that can enter a solution.
@@ -211,35 +203,6 @@ public abstract class AbstractTS<E> {
         this.portionCL = portionCL;
         this.isFirstImprovement = isFirstImprovement;
         this.isWithIntensification = isWithIntensification;
-	}
-
-	/**
-	 * Sets whether the probabilistic TS strategy should be used.
-	 * 
-	 * @param useProbabilisticTS
-	 *            true if the probabilistic TS strategy should be used.
-	 */
-	public void setUseProbabilisticTS(boolean useProbabilisticTS) {
-		this.useProbabilisticTS = useProbabilisticTS;
-	}
-
-	/**
-	 * Sets the intensification by neighborhood parameters.
-	 * 
-	 * @param every
-	 *            The number of iterations between each intensification phase.
-	 * @param length
-	 *            The number of iterations of each intensification phase.
-	 * @param forceBestOnIntens
-	 *            If true, during the intensification phase, the best
-	 *            non-tabu move is always chosen. If false, the
-	 *            first non-tabu improving move is chosen.
-	 */
-	public void setIntensification(int every, int length, boolean forceBestOnIntens) {
-		this.intensifyEvery = every;
-		this.intensifyLength = length;
-		if (forceBestOnIntens)
-			this.isFirstImprovement = false;
 	}
 
 	/**

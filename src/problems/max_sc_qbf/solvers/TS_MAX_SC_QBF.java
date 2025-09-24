@@ -333,29 +333,23 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 			String mode         = args[idx++];
 			boolean firstImprov = Boolean.parseBoolean(args[idx++]);
 
-			boolean useProbTS = false, withIntensification = false, forceBestOnIntens = false;
+			boolean withIntensification = false;
 			double portionCL = 1.0;
-			int intensEvery = 0, intensLength = 0;
+            int beta = 0;
 
 			switch (mode.toLowerCase()) {
 				case "standard":
 					break;
 				case "prob_ts":
 					portionCL = Double.parseDouble(args[idx++]);
-					useProbTS = true;
 					break;
 				case "intensify":
-					intensEvery   = Integer.parseInt(args[idx++]);
-					intensLength  = Integer.parseInt(args[idx++]);
-					if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
 					withIntensification = true;
+                    beta = Integer.parseInt(args[idx++]);
 					break;
 				case "prob_plus_intensify":
 					portionCL = Double.parseDouble(args[idx++]);
-					intensEvery   = Integer.parseInt(args[idx++]);
-					intensLength  = Integer.parseInt(args[idx++]);
-					if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
-					useProbTS           = true;
+                    beta = Integer.parseInt(args[idx++]);
 					withIntensification = true;
 					break;
 				default:
@@ -363,11 +357,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 			}
 
 			long t0 = System.currentTimeMillis();
-			TS_MAX_SC_QBF ts = new TS_MAX_SC_QBF(tenure, timeLimitSec, 3, filename, portionCL, firstImprov, withIntensification);
-			ts.setUseProbabilisticTS(useProbTS);
-			ts.setIntensification(withIntensification ? intensEvery : 0,
-								withIntensification ? intensLength : 0,
-								forceBestOnIntens);
+			TS_MAX_SC_QBF ts = new TS_MAX_SC_QBF(tenure, timeLimitSec, beta, filename, portionCL, firstImprov, withIntensification);
 
 			Solution<Integer> bestSol = ts.solve();
 			long t1 = System.currentTimeMillis();
@@ -386,8 +376,8 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 		System.out.println("Modos:");
 		System.out.println("  standard");
 		System.out.println("  prob_ts <portionCL (0,1]>");
-		System.out.println("  intensify <every> <length> [forceBest(true/false)]");
-		System.out.println("  prob_plus_intensify <portionCL> <every> <length> [forceBest(true/false)]");
+		System.out.println("  intensify <beta>");
+		System.out.println("  prob_plus_intensify <portionCL> <beta>");
 		System.out.println();
 	}
 

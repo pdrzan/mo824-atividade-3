@@ -318,18 +318,78 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	 * A main method used for testing the TS metaheuristic.
 	 * 
 	 */
-	public static void main(String[] args) throws IOException {
-		long startTime = System.currentTimeMillis();
+	public static void main(String[] args) {
+		if (args.length == 0) {
+			printUsage();
+			return;
+		}
 
-		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(50, 10, 3, "instances/max_sc_qbf/max_sc_qbf-n_400-k_5.txt", 1., true, true);
+		try {
+			// <filename> <tenure> <timeLimitSec> <mode> <firstImprovement> [mode params...]
+			int idx = 0;
+			String filename     = args[idx++];
+			int tenure          = Integer.parseInt(args[idx++]);
+			int timeLimitSec    = Integer.parseInt(args[idx++]);
+			String mode         = args[idx++];
+			boolean firstImprov = Boolean.parseBoolean(args[idx++]);
 
-		Solution<Integer> bestSol = tabusearch.solve();
+			boolean useProbTS = false, withIntensification = false, forceBestOnIntens = false;
+			double portionCL = 1.0;
+			int intensEvery = 0, intensLength = 0;
 
-		long endTime   = System.currentTimeMillis();
-		long totalTime = endTime - startTime;
+			switch (mode.toLowerCase()) {
+				case "standard":
+					break;
+				case "prob_ts":
+					portionCL = Double.parseDouble(args[idx++]);
+					useProbTS = true;
+					break;
+				case "intensify":
+					intensEvery   = Integer.parseInt(args[idx++]);
+					intensLength  = Integer.parseInt(args[idx++]);
+					if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
+					withIntensification = true;
+					break;
+				case "prob_plus_intensify":
+					portionCL = Double.parseDouble(args[idx++]);
+					intensEvery   = Integer.parseInt(args[idx++]);
+					intensLength  = Integer.parseInt(args[idx++]);
+					if (args.length > idx) forceBestOnIntens = Boolean.parseBoolean(args[idx++]);
+					useProbTS           = true;
+					withIntensification = true;
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown mode: " + mode);
+			}
 
-        System.out.println("maxVal = " + bestSol);
-		System.out.println("Time = "+(double)totalTime/(double)1000+" seg");
+			long t0 = System.currentTimeMillis();
+			TS_MAX_SC_QBF ts = new TS_MAX_SC_QBF(tenure, timeLimitSec, 3, filename, portionCL, firstImprov, withIntensification);
+			ts.setUseProbabilisticTS(useProbTS);
+			ts.setIntensification(withIntensification ? intensEvery : 0,
+								withIntensification ? intensLength : 0,
+								forceBestOnIntens);
+
+			Solution<Integer> bestSol = ts.solve();
+			long t1 = System.currentTimeMillis();
+
+			System.out.println("Best solution found: " + bestSol);
+			System.out.printf("Time (s): %.3f%n", (t1 - t0) / 1000.0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			printUsage();
+		}
 	}
+
+	private static void printUsage() {
+		System.out.println("Uso (single):");
+		System.out.println("  java -cp bin problems.max_sc_qbf.solvers.TS_MAX_SC_QBF <filename> <tenure> <timeLimitSec> <mode> <firstImprovement(true/false)> [mode params]");
+		System.out.println("Modos:");
+		System.out.println("  standard");
+		System.out.println("  prob_ts <portionCL (0,1]>");
+		System.out.println("  intensify <every> <length> [forceBest(true/false)]");
+		System.out.println("  prob_plus_intensify <portionCL> <every> <length> [forceBest(true/false)]");
+		System.out.println();
+	}
+
 
 }

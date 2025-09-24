@@ -5,10 +5,7 @@ import problems.max_sc_qbf.MAX_SC_QBF_Inverse;
 import solutions.Solution;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 
 /**
@@ -227,6 +224,10 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 
         ArrayList<Integer> CLPortion = makeCLPortion();
 
+        ArrayList<Integer> insertionCandidates = new ArrayList<>();
+        ArrayList<Integer> removalCandidates = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> exchangeCandidates = new ArrayList<>();
+
 		// Evaluate insertions
 		for (Integer candIn : CLPortion) {
 			Double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
@@ -235,40 +236,57 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 					minDeltaCost = deltaCost;
 					bestCandIn = candIn;
 					bestCandOut = null;
+                    insertionCandidates.add(candIn);
 				}
-                if (isFirstImprovement) break;
 			}
 		}
 
-        if (bestCandIn == null || !isFirstImprovement) {
-            // Evaluate removals
-            for (Integer candOut : sol) {
-                Double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
-                if (!TL.contains(candOut) || sol.cost+deltaCost < bestSol.cost) {
-                    if (deltaCost < minDeltaCost) {
-                        minDeltaCost = deltaCost;
-                        bestCandIn = null;
-                        bestCandOut = candOut;
-                    }
-                    if (isFirstImprovement) break;
+        // Evaluate removals
+        for (Integer candOut : sol) {
+            Double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
+            if (!TL.contains(candOut) || sol.cost+deltaCost < bestSol.cost) {
+                if (deltaCost < minDeltaCost) {
+                    minDeltaCost = deltaCost;
+                    bestCandIn = null;
+                    bestCandOut = candOut;
+                    removalCandidates.add(candOut);
                 }
             }
         }
 
-        if ((bestCandIn == null && bestCandOut == null) || !isFirstImprovement) {
-            // Evaluate exchanges
-            for (Integer candIn : CLPortion) {
-                for (Integer candOut : sol) {
-                    Double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
-                    if ((!TL.contains(candIn) && !TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost) {
-                        if (deltaCost < minDeltaCost) {
-                            minDeltaCost = deltaCost;
-                            bestCandIn = candIn;
-                            bestCandOut = candOut;
-                        }
-                        if (isFirstImprovement) break;
+        // Evaluate exchanges
+        for (Integer candIn : CLPortion) {
+            for (Integer candOut : sol) {
+                Double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
+                if ((!TL.contains(candIn) && !TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost) {
+                    if (deltaCost < minDeltaCost) {
+                        minDeltaCost = deltaCost;
+                        bestCandIn = candIn;
+                        bestCandOut = candOut;
+                        ArrayList<Integer> exchangeCadidate = new ArrayList<>();
+                        exchangeCadidate.add(bestCandIn);
+                        exchangeCadidate.add(bestCandOut);
+                        exchangeCandidates.add(exchangeCadidate);
                     }
                 }
+            }
+        }
+
+        if (isFirstImprovement && (!insertionCandidates.isEmpty() || !removalCandidates.isEmpty() || !exchangeCandidates.isEmpty())) {
+            Random random = new Random();
+            int index = random.nextInt(insertionCandidates.size() + removalCandidates.size() + exchangeCandidates.size());
+
+            if (index < insertionCandidates.size()) {
+                bestCandIn = insertionCandidates.get(index);
+                bestCandOut = null;
+            } else if (index < insertionCandidates.size() + removalCandidates.size()) {
+                index -= insertionCandidates.size();
+                bestCandIn = null;
+                bestCandOut = removalCandidates.get(index);
+            } else {
+                index -= insertionCandidates.size() + removalCandidates.size();
+                bestCandIn = exchangeCandidates.get(index).getFirst();
+                bestCandOut = exchangeCandidates.get(index).getLast();
             }
         }
 
@@ -303,7 +321,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
 
-		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(50, 10, 3, "instances/max_sc_qbf/max_sc_qbf-n_400-k_5.txt", 1., false, true);
+		TS_MAX_SC_QBF tabusearch = new TS_MAX_SC_QBF(50, 10, 3, "instances/max_sc_qbf/max_sc_qbf-n_400-k_5.txt", 1., true, true);
 
 		Solution<Integer> bestSol = tabusearch.solve();
 

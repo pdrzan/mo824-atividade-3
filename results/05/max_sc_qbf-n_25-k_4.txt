@@ -1,0 +1,8 @@
+(Iter. 0) BestSol = Solution: cost=[-203.58999999999995], size=[16], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 22, 9, 17, 13, 0, 21, 3]
+(Iter. 1) BestSol = Solution: cost=[-205.81], size=[17], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 22, 9, 17, 13, 0, 21, 3, 14]
+(Iter. 4) BestSol = Solution: cost=[-216.43999999999997], size=[19], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 22, 9, 13, 0, 21, 3, 14, 6, 10, 23]
+(Iter. 5) BestSol = Solution: cost=[-232.22], size=[18], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 9, 13, 0, 21, 3, 14, 6, 10, 23]
+(Iter. 6) BestSol = Solution: cost=[-248.57999999999998], size=[18], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 9, 13, 0, 21, 3, 14, 10, 23, 7]
+(Iter. 245) BestSol = Solution: cost=[-255.96], size=[18], elements=[18, 21, 11, 5, 1, 24, 14, 12, 3, 15, 19, 9, 23, 8, 13, 2, 6, 10]
+Best solution found: Solution: cost=[-255.96], size=[18], elements=[18, 21, 11, 5, 1, 24, 14, 12, 3, 15, 19, 9, 23, 8, 13, 2, 6, 10]
+Time (s): 1800.008

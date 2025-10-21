@@ -73,6 +73,16 @@ public class QBF implements Evaluator<Integer> {
 
 	}
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see problems.Evaluator#isValid()
+     */
+    @Override
+    public boolean isValid(Solution<Integer> sol) {
+        return true;
+    }
+
 	/*
 	 * (non-Javadoc)
 	 * 

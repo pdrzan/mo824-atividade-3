@@ -129,7 +129,11 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 
                 Double deltaCost = ObjFunction.evaluateInsertionCost(firstCandIn, secondCandIn, sol);
                 if ((!TL.contains(firstCandIn) && !TL.contains(secondCandIn)) || sol.cost + deltaCost < bestSol.cost) {
-                    if (deltaCost < minDeltaCost) {
+                    Solution<Integer> currentSolution = new Solution<>(sol);
+                    currentSolution.add(firstCandIn);
+                    currentSolution.add(secondCandIn);
+
+                    if (deltaCost < minDeltaCost && ObjFunction.isValid(currentSolution)) {
                         minDeltaCost = deltaCost;
 
                         firstBestCandIn = firstCandIn;
@@ -145,7 +149,11 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 
                 Double deltaCost = ObjFunction.evaluateRemovalCost(firstCandOut, secondCandOut, sol);
                 if ((!TL.contains(firstCandOut) && !TL.contains(secondCandOut)) || sol.cost + deltaCost < bestSol.cost) {
-                    if (deltaCost < minDeltaCost) {
+                    Solution<Integer> currentSolution = new Solution<>(sol);
+                    currentSolution.remove(firstCandOut);
+                    currentSolution.remove(secondCandOut);
+
+                    if (deltaCost < minDeltaCost && ObjFunction.isValid(currentSolution)) {
                         minDeltaCost = deltaCost;
 
                         firstBestCandOut = firstCandOut;
@@ -232,7 +240,10 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 		for (Integer candIn : CLPortion) {
 			Double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
 			if (!TL.contains(candIn) || sol.cost+deltaCost < bestSol.cost) {
-				if (deltaCost < minDeltaCost) {
+                Solution<Integer> currentSolution = new Solution<>(sol);
+                currentSolution.add(candIn);
+
+				if (deltaCost < minDeltaCost && ObjFunction.isValid(currentSolution)) {
 					minDeltaCost = deltaCost;
 					bestCandIn = candIn;
 					bestCandOut = null;
@@ -245,7 +256,10 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
         for (Integer candOut : sol) {
             Double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
             if (!TL.contains(candOut) || sol.cost+deltaCost < bestSol.cost) {
-                if (deltaCost < minDeltaCost) {
+                Solution<Integer> currentSolution = new Solution<>(sol);
+                currentSolution.remove(candOut);
+
+                if (deltaCost < minDeltaCost && ObjFunction.isValid(currentSolution)) {
                     minDeltaCost = deltaCost;
                     bestCandIn = null;
                     bestCandOut = candOut;
@@ -259,7 +273,11 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
             for (Integer candOut : sol) {
                 Double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
                 if ((!TL.contains(candIn) && !TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost) {
-                    if (deltaCost < minDeltaCost) {
+                    Solution<Integer> currentSolution = new Solution<>(sol);
+                    currentSolution.add(candIn);
+                    currentSolution.remove(candOut);
+
+                    if (deltaCost < minDeltaCost && ObjFunction.isValid(currentSolution)) {
                         minDeltaCost = deltaCost;
                         bestCandIn = candIn;
                         bestCandOut = candOut;
@@ -335,7 +353,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 
 			boolean withIntensification = false;
 			double portionCL = 1.0;
-            int beta = 0;
+            int theta = 0;
 
 			switch (mode.toLowerCase()) {
 				case "standard":
@@ -345,11 +363,11 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 					break;
 				case "intensify":
 					withIntensification = true;
-                    beta = Integer.parseInt(args[idx++]);
+                    theta = Integer.parseInt(args[idx++]);
 					break;
 				case "prob_plus_intensify":
 					portionCL = Double.parseDouble(args[idx++]);
-                    beta = Integer.parseInt(args[idx++]);
+                    theta = Integer.parseInt(args[idx++]);
 					withIntensification = true;
 					break;
 				default:
@@ -357,7 +375,7 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 			}
 
 			long t0 = System.currentTimeMillis();
-			TS_MAX_SC_QBF ts = new TS_MAX_SC_QBF(tenure, timeLimitSec, beta, filename, portionCL, firstImprov, withIntensification);
+			TS_MAX_SC_QBF ts = new TS_MAX_SC_QBF(tenure, timeLimitSec, theta, filename, portionCL, firstImprov, withIntensification);
 
 			Solution<Integer> bestSol = ts.solve();
 			long t1 = System.currentTimeMillis();
@@ -376,8 +394,8 @@ public class TS_MAX_SC_QBF extends AbstractTS<Integer> {
 		System.out.println("Modos:");
 		System.out.println("  standard");
 		System.out.println("  prob_ts <portionCL (0,1]>");
-		System.out.println("  intensify <beta>");
-		System.out.println("  prob_plus_intensify <portionCL> <beta>");
+		System.out.println("  intensify <theta>");
+		System.out.println("  prob_plus_intensify <portionCL> <theta>");
 		System.out.println();
 	}
 

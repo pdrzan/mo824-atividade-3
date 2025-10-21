@@ -76,6 +76,16 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
 
 	}
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see problems.Evaluator#isValid()
+     */
+    @Override
+    public boolean isValid(Solution<Integer> sol) {
+        return totalUncovered(sol) == 0;
+    }
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -481,6 +491,12 @@ public class MAX_SC_QBF implements Evaluator<Integer> {
             if (cc[k] == 1 && !bsIn.get(k)) t++;
         }
         return t;
+    }
+
+    public int totalUncovered(Solution<Integer> sol) {
+        BitSet uncovered = coveredOf(sol);
+        uncovered.flip(0, size);
+        return uncovered.cardinality();
     }
 
 	/**

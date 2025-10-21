@@ -106,4 +106,14 @@ public interface Evaluator<E> {
 	 */
 	public abstract Double evaluateExchangeCost(E elemIn, E elemOut, Solution<E> sol);
 
+    /**
+     * Evaluates if the solution is valid.
+     *
+     * @param sol
+     *          the solution to be evaluated
+     * @return
+     *          if the solution is valid or not
+     */
+    public abstract boolean isValid(Solution<E> sol);
+
 }

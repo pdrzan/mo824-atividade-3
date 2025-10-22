@@ -1,5 +1,3 @@
-(Iter. 0) BestSol = Solution: cost=[-192.1], size=[18], elements=[15, 23, 8, 6, 18, 2, 17, 16, 24, 5, 22, 9, 4, 20, 10, 1, 7, 12]
-(Iter. 28) BestSol = Solution: cost=[-197.03000000000003], size=[17], elements=[8, 18, 17, 16, 5, 22, 9, 4, 1, 7, 21, 24, 20, 15, 2, 23, 6]
-(Iter. 548) BestSol = Solution: cost=[-202.68], size=[18], elements=[16, 4, 1, 7, 21, 17, 8, 22, 6, 23, 10, 15, 9, 24, 5, 2, 18, 20]
-Best solution found: Solution: cost=[-202.68], size=[18], elements=[16, 4, 1, 7, 21, 17, 8, 22, 6, 23, 10, 15, 9, 24, 5, 2, 18, 20]
-Time (s): 1800.007
+(Iter. 0) BestSol = Solution: cost=[-202.68], size=[18], elements=[15, 23, 8, 6, 18, 2, 17, 16, 24, 5, 22, 9, 4, 20, 10, 1, 21, 7]
+Best solution found: Solution: cost=[-202.68], size=[18], elements=[15, 23, 8, 6, 18, 2, 17, 16, 24, 5, 22, 9, 4, 20, 10, 1, 21, 7]
+Time (s): 1800.006

@@ -1,7 +1,10 @@
-(Iter. 0) BestSol = Solution: cost=[-219.01999999999998], size=[15], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 22, 9, 17, 13, 21, 14]
-(Iter. 1) BestSol = Solution: cost=[-224.76999999999992], size=[16], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 22, 9, 17, 13, 21, 14, 10]
-(Iter. 3) BestSol = Solution: cost=[-231.81], size=[17], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 9, 17, 13, 21, 14, 10, 3, 23]
-(Iter. 4) BestSol = Solution: cost=[-253.84], size=[17], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 9, 13, 21, 14, 10, 3, 23, 15]
-(Iter. 5) BestSol = Solution: cost=[-255.96], size=[18], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 9, 13, 21, 14, 10, 3, 23, 15, 6]
-Best solution found: Solution: cost=[-255.96], size=[18], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 9, 13, 21, 14, 10, 3, 23, 15, 6]
-Time (s): 1800.008
+(Iter. 0) BestSol = Solution: cost=[-206.80999999999997], size=[16], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 22, 9, 17, 13, 0, 21, 7]
+(Iter. 2) BestSol = Solution: cost=[-216.56999999999996], size=[18], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 22, 9, 17, 13, 0, 21, 7, 23, 14]
+(Iter. 8) BestSol = Solution: cost=[-223.59999999999997], size=[21], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 9, 17, 13, 0, 21, 7, 23, 14, 4, 3, 15, 10]
+(Iter. 11) BestSol = Solution: cost=[-229.39], size=[20], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 13, 0, 21, 7, 23, 14, 4, 3, 15, 10, 6]
+(Iter. 12) BestSol = Solution: cost=[-233.89000000000001], size=[21], elements=[8, 24, 11, 12, 1, 2, 19, 18, 5, 13, 0, 21, 7, 23, 14, 4, 3, 15, 10, 6, 9]
+(Iter. 77) BestSol = Solution: cost=[-240.76000000000002], size=[18], elements=[18, 21, 11, 24, 1, 5, 0, 2, 8, 13, 10, 19, 4, 12, 7, 3, 14, 23]
+(Iter. 78) BestSol = Solution: cost=[-248.57999999999998], size=[18], elements=[18, 21, 11, 24, 1, 5, 0, 2, 8, 13, 10, 19, 12, 7, 3, 14, 23, 9]
+(Iter. 109) BestSol = Solution: cost=[-255.96], size=[18], elements=[18, 21, 24, 1, 5, 2, 19, 12, 9, 13, 8, 11, 10, 3, 14, 15, 6, 23]
+Best solution found: Solution: cost=[-255.96], size=[18], elements=[18, 21, 24, 1, 5, 2, 19, 12, 9, 13, 8, 11, 10, 3, 14, 15, 6, 23]
+Time (s): 1800.009

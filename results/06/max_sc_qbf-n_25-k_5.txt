@@ -1,7 +1,7 @@
-(Iter. 0) BestSol = Solution: cost=[-231.5], size=[18], elements=[16, 21, 5, 20, 1, 17, 12, 18, 23, 15, 3, 10, 2, 0, 4, 7, 6, 24]
-(Iter. 5) BestSol = Solution: cost=[-236.91000000000003], size=[18], elements=[16, 21, 5, 20, 1, 12, 18, 23, 15, 3, 10, 2, 0, 4, 7, 6, 14, 17]
-(Iter. 39) BestSol = Solution: cost=[-240.11000000000007], size=[17], elements=[12, 23, 15, 2, 4, 9, 0, 20, 16, 5, 7, 21, 1, 10, 17, 18, 3]
-(Iter. 347) BestSol = Solution: cost=[-240.36000000000004], size=[17], elements=[15, 10, 23, 6, 2, 12, 3, 18, 16, 0, 5, 4, 7, 21, 1, 17, 20]
-(Iter. 348) BestSol = Solution: cost=[-244.42000000000004], size=[16], elements=[15, 10, 23, 2, 12, 3, 18, 16, 0, 5, 4, 7, 21, 1, 17, 20]
-Best solution found: Solution: cost=[-244.42000000000004], size=[16], elements=[15, 10, 23, 2, 12, 3, 18, 16, 0, 5, 4, 7, 21, 1, 17, 20]
+(Iter. 0) BestSol = Solution: cost=[-236.91000000000003], size=[18], elements=[16, 21, 5, 20, 1, 17, 12, 18, 23, 15, 3, 10, 2, 0, 4, 7, 6, 14]
+(Iter. 33) BestSol = Solution: cost=[-237.97000000000008], size=[17], elements=[23, 15, 2, 9, 11, 4, 0, 20, 16, 21, 7, 17, 10, 1, 12, 5, 18]
+(Iter. 58) BestSol = Solution: cost=[-239.73000000000005], size=[16], elements=[9, 4, 20, 16, 21, 10, 1, 12, 5, 18, 3, 15, 17, 0, 23, 2]
+(Iter. 59) BestSol = Solution: cost=[-240.87000000000006], size=[17], elements=[9, 4, 20, 16, 21, 10, 1, 12, 5, 18, 3, 15, 17, 0, 23, 2, 11]
+(Iter. 1707) BestSol = Solution: cost=[-244.42000000000004], size=[16], elements=[15, 23, 1, 4, 2, 10, 18, 0, 17, 20, 5, 21, 12, 16, 7, 3]
+Best solution found: Solution: cost=[-244.42000000000004], size=[16], elements=[15, 23, 1, 4, 2, 10, 18, 0, 17, 20, 5, 21, 12, 16, 7, 3]
 Time (s): 1800.008
